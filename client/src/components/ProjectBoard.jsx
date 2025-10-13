@@ -55,7 +55,12 @@ export default function ProjectBoard({
       <div className="flex justify-between items-center mb-4">
         <h2 className="text-2xl font-bold">{project.name}</h2>
       </div>
-
+      <button
+        onClick={addCustomTask}
+        className="mt-4 bg-gray-300 px-4 py-1 rounded"
+      >
+        + Add Custom Task
+      </button>
       <DragDropContext onDragEnd={onDragEnd}>
         <Droppable droppableId="tasks">
           {(provided) => (
@@ -92,13 +97,6 @@ export default function ProjectBoard({
           )}
         </Droppable>
       </DragDropContext>
-
-      <button
-        onClick={addCustomTask}
-        className="mt-4 bg-gray-300 px-4 py-1 rounded"
-      >
-        + Add Custom Task
-      </button>
     </div>
   );
 }
