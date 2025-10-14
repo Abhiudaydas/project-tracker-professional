@@ -10,7 +10,7 @@ export default function ProjectList({
       {projects.length === 0 ? (
         <p className="text-gray-500 text-sm">No projects yet.</p>
       ) : (
-        <ul>
+        <ul style={{ listStyleType: "none" }}>
           {projects.map((p) => (
             <li
               key={p._id}
@@ -19,14 +19,13 @@ export default function ProjectList({
                 ${selectedId === p._id ? "bg-blue-100" : "hover:bg-gray-100"}
                 ${p.isCompleted ? "line-through text-gray-500" : ""}`}
             >
+              {/* Hidden radio-like indicator */}
               <input
-                type="checkbox"
-                checked={p.isCompleted}
-                onChange={(e) => {
-                  e.stopPropagation(); // Prevent li click
-                  onToggleComplete(p._id, e.target.checked);
-                }}
-                className="w-4 h-4"
+                type="radio"
+                name="selectedProject"
+                checked={selectedId === p._id}
+                className="appearance-none w-4 h-4 border-2 border-gray-400 rounded-full checked:bg-blue-500 checked:border-none"
+                readOnly
               />
               {p.name}
             </li>

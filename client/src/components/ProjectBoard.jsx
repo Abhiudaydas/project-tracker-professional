@@ -14,7 +14,6 @@ export default function ProjectBoard({
     setTasks(project.tasks);
   }, [project]);
 
-  // Drag & Drop
   const onDragEnd = (result) => {
     if (!result.destination) return;
     const newTasks = Array.from(tasks);
@@ -24,7 +23,6 @@ export default function ProjectBoard({
     onTasksChange(project._id, newTasks);
   };
 
-  // Add New Task
   const addCustomTask = () => {
     const newTask = {
       id: Date.now().toString(),
@@ -37,7 +35,6 @@ export default function ProjectBoard({
     onTasksChange(project._id, updatedTasks);
   };
 
-  // Delete Task
   const handleDeleteTask = async (taskId) => {
     const newTasks = tasks.filter((task) => task.id !== taskId);
     setTasks(newTasks);
@@ -55,12 +52,14 @@ export default function ProjectBoard({
       <div className="flex justify-between items-center mb-4">
         <h2 className="text-2xl font-bold">{project.name}</h2>
       </div>
+
       <button
         onClick={addCustomTask}
         className="mt-4 bg-gray-300 px-4 py-1 rounded"
       >
         + Add Custom Task
       </button>
+
       <DragDropContext onDragEnd={onDragEnd}>
         <Droppable droppableId="tasks">
           {(provided) => (

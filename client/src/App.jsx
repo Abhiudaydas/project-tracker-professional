@@ -2,7 +2,8 @@ import { useState, useEffect } from "react";
 import axios from "axios";
 import ProjectList from "./components/ProjectList";
 import ProjectBoard from "./components/ProjectBoard";
-
+// App.js
+import "./App.css";
 function App() {
   const [projects, setProjects] = useState([]);
   const [selectedProject, setSelectedProject] = useState(null);
@@ -10,7 +11,6 @@ function App() {
 
   const API = "http://localhost:5000/api/projects";
 
-  // Fetch all projects
   const fetchProjects = async () => {
     try {
       const res = await axios.get(API);
@@ -24,7 +24,6 @@ function App() {
     fetchProjects();
   }, []);
 
-  // Create new project
   const handleCreateProject = async (name) => {
     try {
       await axios.post(API, { name });
@@ -35,7 +34,6 @@ function App() {
     }
   };
 
-  // Update tasks (Drag & Drop, Check/Uncheck, Delete)
   const handleTasksChange = async (projectId, newTasks) => {
     try {
       await axios.put(`${API}/${projectId}`, { tasks: newTasks });
@@ -45,7 +43,6 @@ function App() {
     }
   };
 
-  // Toggle Project Completion
   const handleToggleProjectComplete = async (projectId, completed) => {
     try {
       await axios.put(`${API}/${projectId}`, { isCompleted: completed });
@@ -63,10 +60,8 @@ function App() {
   };
 
   return (
-    <div className="min-h-screen bg-gray-100 p-6">
-      <h1 className="text-3xl font-bold text-center mb-6">
-        Project Task Tracker
-      </h1>
+    <div className="min-h-screen bg-gray-100 p-6 ">
+      <h1 className="text-3xl font-bold mb-4 main_h">Project Task Tracker</h1>
 
       <div className="flex gap-6">
         {/*---------- PROJECT LIST ----------*/}
@@ -85,6 +80,7 @@ function App() {
             onToggleComplete={handleToggleProjectComplete}
           />
         </div>
+
         {/*---------- MODAL FOR NEW PROJECT ----------*/}
         {isModalOpen && (
           <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center">
@@ -117,6 +113,7 @@ function App() {
             </div>
           </div>
         )}
+
         {/*---------- PROJECT BOARD ----------*/}
         <div className="w-3/4">
           {selectedProject ? (
