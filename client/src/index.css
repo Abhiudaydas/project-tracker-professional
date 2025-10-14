@@ -20,3 +20,7 @@ body {
   background-repeat: no-repeat;
   background-size: cover;
 }
+ul {
+  list-style: none; /* 🛑 Removes default bullets */
+  padding-left: 0;
+}

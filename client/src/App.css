@@ -43,3 +43,13 @@
 .main_h {
   text-align: center !important;
 }
+.main_h {
+  font-size: 3.5rem;
+  color: #e11d48;
+  text-align: center;
+  font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+  margin-bottom: 2rem;
+}
+.project-item {
+  cursor: pointer;
+}

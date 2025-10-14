@@ -61,7 +61,7 @@ function App() {
 
   return (
     <div className="min-h-screen bg-gray-100 p-6 ">
-      <h1 className="text-3xl font-bold mb-4 main_h">Project Task Tracker</h1>
+      <h1 className="main_h">Project Task Tracker</h1>
 
       <div className="flex gap-6">
         {/*---------- PROJECT LIST ----------*/}
@@ -121,6 +121,7 @@ function App() {
               project={selectedProject}
               onTasksChange={handleTasksChange}
               onProjectUpdate={fetchProjects}
+              onResetProject={() => setSelectedProject(null)} // ✅ added
             />
           ) : (
             <p className="text-gray-500 text-center mt-10">
