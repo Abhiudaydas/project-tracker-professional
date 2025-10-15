@@ -10,7 +10,7 @@ input[type="radio"].appearance-none:checked::before {
   text-align: center;
 }
 body {
-  background-image: url(photos/background_img_2.jpg);
+  background-image: url(photos/bg_image.jpg);
 
   /* Full height */
   height: 100%;

@@ -56,7 +56,9 @@ export default function ProjectBoard({
     );
     if (isConfirmed) {
       try {
-        await axios.delete(`http://localhost:5000/api/projects/${project._id}`);
+        await axios.delete(
+          `https://project-tracker-api-ie1b.onrender.com/api/projects/${project._id}`
+        );
         onResetProject(); // Clear the selected project view in App.js
         onProjectUpdate(); // Refetch the project list
       } catch (err) {
