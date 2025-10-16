@@ -1,81 +1,151 @@
+// server/routes/projects.js
+
 const express = require("express");
 const router = express.Router();
 const Project = require("../models/Project");
+const authMiddleware = require("../middleware/auth");
 
-// Default tasks
-const DEFAULT_TASKS = [
-  { id: "1", title: "navigation", isDone: false, note: "" },
-  { id: "2", title: "thank you and form settings", isDone: false, note: "" },
-  { id: "3", title: "review", isDone: false, note: "" },
-  { id: "4", title: "our team", isDone: false, note: "" },
-  { id: "5", title: "pages /premium pages/blogs", isDone: false, note: "" },
-  { id: "6", title: "custom content", isDone: false, note: "" },
-  { id: "7", title: "gallery", isDone: false, note: "" },
-  {
-    id: "8",
-    title: "expendable footer{service area}",
-    isDone: false,
-    note: "",
-  },
-  { id: "9", title: "coupons", isDone: false, note: "" },
-  { id: "10", title: "redirection", isDone: false, note: "" },
-  { id: "11", title: "qa url sheet", isDone: false, note: "" },
-  { id: "12", title: "dummy pages dlt", isDone: false, note: "" },
-];
+// 🛡️ CRITICAL STEP: APPLY THE MIDDLEWARE 🛡️
+// This line MUST be here, and it MUST be before your other routes.
+// It ensures that no unauthenticated user can even attempt to access these routes.
+router.use(authMiddleware);
 
-// GET All Projects
+// --- GET all projects FOR THE LOGGED-IN USER ---
 router.get("/", async (req, res) => {
   try {
-    const projects = await Project.find();
+    const projects = await Project.find({ user: req.user.id });
+
     res.json(projects);
   } catch (err) {
-    res.status(500).json({ message: err.message });
+    res.status(500).json({ message: "Error fetching projects." });
   }
 });
 
-// POST New Project
+// --- POST a new project FOR THE LOGged-in user ---
 router.post("/", async (req, res) => {
-  const { name } = req.body;
-  if (!name) return res.status(400).json({ message: "Name required" });
-
   try {
-    const newProject = new Project({
-      name,
-      tasks: DEFAULT_TASKS,
+    const defaultTasks = [
+      {
+        id: `task-${Date.now()}-1`,
+        title: "Navigation",
+        note: "",
+        isDone: false,
+      },
+      {
+        id: `task-${Date.now()}-2`,
+        title: "Thank You and Form Settings",
+        note: "",
+        isDone: false,
+      },
+      { id: `task-${Date.now()}-3`, title: "Review", note: "", isDone: false },
+      {
+        id: `task-${Date.now()}-4`,
+        title: "Our Team",
+        note: "",
+        isDone: false,
+      },
+      {
+        id: `task-${Date.now()}-5`,
+        title: "Pages / Premium Pages / Blogs",
+        note: "",
+        isDone: false,
+      },
+      {
+        id: `task-${Date.now()}-6`,
+        title: "Custom Content",
+        note: "",
+        isDone: false,
+      },
+      { id: `task-${Date.now()}-7`, title: "Gallery", note: "", isDone: false },
+      {
+        id: `task-${Date.now()}-8`,
+        title: "Expendable Footer {service area}",
+        note: "",
+        isDone: false,
+      },
+      { id: `task-${Date.now()}-9`, title: "Coupons", note: "", isDone: false },
+      {
+        id: `task-${Date.now()}-10`,
+        title: "Redirection",
+        note: "",
+        isDone: false,
+      },
+      {
+        id: `task-${Date.now()}-11`,
+        title: "QA URL Sheet",
+        note: "",
+        isDone: false,
+      },
+      {
+        id: `task-${Date.now()}-12`,
+        title: "Dummy Pages DLT",
+        note: "",
+        isDone: false,
+      },
+    ];
+
+    const project = new Project({
+      name: req.body.name,
+      user: req.user.id, // This is the critical line
+      tasks: defaultTasks,
+      isCompleted: false,
     });
-    const saved = await newProject.save();
-    res.status(201).json(saved);
+    const newProject = await project.save();
+
+    res.status(201).json(newProject);
   } catch (err) {
-    res.status(400).json({ message: err.message });
+    res
+      .status(400)
+      .json({ message: "Failed to create project.", error: err.message });
   }
 });
-
-// PUT Update Project (Tasks OR Completion Status)
+// --- PUT (Update) a specific project OWNED BY THE LOGGED-IN USER ---
 router.put("/:id", async (req, res) => {
-  const { tasks, isCompleted } = req.body; // Can send either tasks or isCompleted
-
   try {
-    const updatedProject = await Project.findByIdAndUpdate(
-      req.params.id,
-      {
-        ...(tasks !== undefined && { tasks }),
-        ...(isCompleted !== undefined && { isCompleted }),
-      },
-      { new: true }
-    );
+    const projectToUpdate = await Project.findOne({
+      _id: req.params.id,
+      user: req.user.id,
+    });
+
+    if (!projectToUpdate) {
+      return res
+        .status(404)
+        .json({ message: "Project not found or you do not have permission." });
+    }
+
+    // Update the fields from the request body
+    if (req.body.name) projectToUpdate.name = req.body.name;
+    if (req.body.tasks) projectToUpdate.tasks = req.body.tasks;
+    if (typeof req.body.isCompleted === "boolean") {
+      projectToUpdate.isCompleted = req.body.isCompleted;
+    }
+
+    const updatedProject = await projectToUpdate.save();
     res.json(updatedProject);
   } catch (err) {
-    res.status(400).json({ message: err.message });
+    res
+      .status(400)
+      .json({ message: "Failed to update project.", error: err.message });
   }
 });
 
-// DELETE Project
+// --- DELETE a specific project OWNED BY THE LOGGED-IN USER ---
 router.delete("/:id", async (req, res) => {
   try {
-    await Project.findByIdAndDelete(req.params.id);
-    res.json({ message: "Project Deleted" });
+    const deletedProject = await Project.findOneAndDelete({
+      _id: req.params.id,
+      user: req.user.id,
+    });
+
+    if (!deletedProject) {
+      return res
+        .status(404)
+        .json({ message: "Project not found or you do not have permission." });
+    }
+
+    res.json({ message: "Project deleted successfully" });
   } catch (err) {
-    res.status(400).json({ message: err.message });
+    res.status(500).json({ message: "Failed to delete project." });
   }
 });
 
